@@ -1,0 +1,20 @@
+version: '3.7'
+
+services: 
+  thingsboard-api:
+    container_name: thingsboard-api
+    build:
+      dockerfile: Dockerfile
+      # Only will build development stage from our dockerfile
+      target: production
+    working_dir: /app
+    command: npm run start:prod
+    env_file:
+      - .env
+    environment:
+      - CORS=true
+      - PORT=3000
+      - API_THINGSBOARD_URL=https://app.anukys.com/api
+    ports:
+      - 7010:3000
+  
