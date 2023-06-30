@@ -6,9 +6,8 @@ services:
     build:
       dockerfile: Dockerfile
       # Only will build development stage from our dockerfile
-      target: production
+      target: development
     working_dir: /app
-    command: npm run start:prod
     env_file:
       - .env
     environment:
