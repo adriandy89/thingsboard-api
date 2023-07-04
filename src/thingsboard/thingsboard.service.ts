@@ -117,7 +117,7 @@ export class ThingsboardService {
       },
       params: {
         ...telemetryQueryParamsDto,
-        keys: 'engine.ignition.status,position.speed',
+        keys: 'engine.ignition.status,position.speed,position.latitude,position.longitude',
       },
     };
     const { data } = await firstValueFrom(
@@ -141,25 +141,36 @@ export class ThingsboardService {
     try {
       const ignitionStatus = data['engine.ignition.status'];
       const speed = data['position.speed'];
+      const latitude = data['position.latitude'];
+      const longitude = data['position.longitude'];
       let stops = 0;
       let count = 0;
       let stopt = false;
+      const coordinates = [];
       if (ignitionStatus && speed) {
         for (let i = 1; i < ignitionStatus.length; i++) {
-          const ignitionPrevStatus = ignitionStatus[i - 1].value;
-          const speedPrevValue = speed[i - 1].value;
+          const ignitionPrevStatus = ignitionStatus[i - 1]?.value;
+          const speedPrevValue = speed[i - 1]?.value;
           if (
             ignitionPrevStatus == 'false' &&
             speedPrevValue == '0' &&
             ignitionStatus[i].value == 'false' &&
             speed[i].value == '0'
           ) {
+            count += speed[i - 1].ts - speed[i].ts;
             if (!stopt) {
-              count += speed[i - 1].ts - speed[i].ts;
               if (count >= telemetryQueryParamsDto.stopInMinutes * 60 * 1000) {
                 stops++;
                 stopt = true;
+                coordinates.push({
+                  latitude: latitude[i].value,
+                  longitude: longitude[i].value,
+                  timestamp: speed[i].ts,
+                  stopTime: count,
+                });
               }
+            } else {
+              coordinates[coordinates.length - 1].stopTime = count;
             }
           } else {
             count = 0;
@@ -167,7 +178,7 @@ export class ThingsboardService {
           }
         }
       }
-      return { stops, deviceId };
+      return { stops, deviceId, coordinates };
     } catch (error) {
       console.log(error);
     }
@@ -203,7 +214,6 @@ export class ThingsboardService {
           }),
         ),
     );
-    console.log(data);
     const promises = [];
     for (const device of data.data) {
       const paramsDto: CalculateDeviceStopsDto = {
