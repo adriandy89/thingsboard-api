@@ -156,8 +156,8 @@ export class ThingsboardService {
           if (
             ignitionPrevStatus == 'false' &&
             speedPrevValue == '0' &&
-            ignitionStatus[i].value == 'false' &&
-            speed[i].value == '0'
+            ignitionStatus[i]?.value == 'false' &&
+            speed[i]?.value == '0'
           ) {
             count += speed[i - 1].ts - speed[i].ts;
             if (!stopt) {
