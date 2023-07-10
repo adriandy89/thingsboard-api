@@ -117,6 +117,7 @@ export class ThingsboardService {
       },
       params: {
         ...telemetryQueryParamsDto,
+        limit: 50_000,
         keys: 'engine.ignition.status,position.speed,position.latitude,position.longitude',
       },
     };
@@ -147,6 +148,7 @@ export class ThingsboardService {
       let count = 0;
       let stopt = false;
       const coordinates = [];
+      const travel = [];
       if (ignitionStatus && speed) {
         for (let i = 1; i < ignitionStatus.length; i++) {
           const ignitionPrevStatus = ignitionStatus[i - 1]?.value;
@@ -178,7 +180,19 @@ export class ThingsboardService {
           }
         }
       }
-      return { stops, deviceId, coordinates };
+      for (let j = 0; j < latitude.length; j++) {
+        travel.push({
+          ignitionStatus: ignitionStatus[j].value,
+          speed: speed[j].value,
+          latitude: latitude[j].value,
+          longitude: longitude[j].value,
+          timestamp: latitude[j].ts,
+        });
+      }
+      if (travel.length > 0) {
+        travel.sort((a, b) => a.timestamp - b.timestamp);
+      }
+      return { stops, deviceId, coordinates, travel };
     } catch (error) {
       console.log(error);
     }
