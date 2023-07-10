@@ -165,8 +165,8 @@ export class ThingsboardService {
                 stops++;
                 stopt = true;
                 coordinates.push({
-                  latitude: latitude[i].value,
-                  longitude: longitude[i].value,
+                  latitude: latitude[i]?.value || null,
+                  longitude: longitude[i]?.value || null,
                   timestamp: speed[i].ts,
                   stopTime: count,
                 });
@@ -180,14 +180,16 @@ export class ThingsboardService {
           }
         }
       }
-      for (let j = 0; j < latitude.length; j++) {
-        travel.push({
-          ignitionStatus: ignitionStatus[j].value,
-          speed: speed[j].value,
-          latitude: latitude[j].value,
-          longitude: longitude[j].value,
-          timestamp: latitude[j].ts,
-        });
+      if (latitude && latitude.length > 0) {
+        for (let j = 0; j < latitude.length; j++) {
+          travel.push({
+            ignitionStatus: ignitionStatus[j].value,
+            speed: speed[j].value,
+            latitude: latitude[j].value,
+            longitude: longitude[j].value,
+            timestamp: latitude[j].ts,
+          });
+        }
       }
       if (travel.length > 0) {
         travel.sort((a, b) => a.timestamp - b.timestamp);
