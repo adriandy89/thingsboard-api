@@ -240,7 +240,6 @@ export class ThingsboardService {
       );
     }
     const r = await Promise.all(promises);
-    console.log(r);
     const response = [];
     for (let i = 0; i < data.data.length; i++) {
       const element = {
