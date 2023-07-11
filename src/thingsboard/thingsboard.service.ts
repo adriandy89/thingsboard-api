@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AxiosError, AxiosRequestConfig } from 'axios';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './interfaces/login.interface';
 import { ConfigService } from '@nestjs/config';
@@ -117,7 +117,7 @@ export class ThingsboardService {
       },
       params: {
         ...telemetryQueryParamsDto,
-        limit: 50_000,
+        limit: 35_000,
         keys: 'engine.ignition.status,position.speed,position.latitude,position.longitude',
       },
     };
@@ -157,7 +157,8 @@ export class ThingsboardService {
             ignitionPrevStatus == 'false' &&
             speedPrevValue == '0' &&
             ignitionStatus[i]?.value == 'false' &&
-            speed[i]?.value == '0'
+            speed[i]?.value == '0' &&
+            latitude[i]?.value
           ) {
             count += speed[i - 1].ts - speed[i].ts;
             if (!stopt) {
