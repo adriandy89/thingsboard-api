@@ -183,8 +183,8 @@ export class ThingsboardService {
       if (latitude && latitude.length > 0) {
         for (let j = 0; j < latitude.length; j++) {
           travel.push({
-            ignitionStatus: ignitionStatus[j].value,
-            speed: speed[j].value,
+            ignitionStatus: ignitionStatus[j]?.value || null,
+            speed: speed[j]?.value || null,
             latitude: latitude[j].value,
             longitude: longitude[j].value,
             timestamp: latitude[j].ts,
